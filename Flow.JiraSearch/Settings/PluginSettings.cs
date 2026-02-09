@@ -5,6 +5,7 @@ public record PluginSettings
     public PluginSettings()
     {
         BaseUrl = "https://www.example.com";
+        UserEmail = string.Empty;
         Timeout = TimeSpan.FromSeconds(10);
         ApiToken = string.Empty;
         MaxResults = 10;
@@ -12,6 +13,7 @@ public record PluginSettings
     }
 
     public string BaseUrl { get; set; }
+    public string UserEmail { get; set; }
     public TimeSpan Timeout { get; set; }
     public string ApiToken { get; set; }
     public List<string> DefaultProjects { get; set; }

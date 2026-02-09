@@ -23,6 +23,22 @@ internal sealed class Searcher(
 
         if (string.IsNullOrWhiteSpace(query.Search))
             return CreateHints();
+        if (string.IsNullOrWhiteSpace(settings.ApiToken))
+            return
+            [
+                resultCreator.CreateHint(
+                    "Missing Jira API token",
+                    "Set API Token in plugin settings"
+                ),
+            ];
+        if (RequiresCloudEmailConfiguration())
+            return
+            [
+                resultCreator.CreateHint(
+                    "Jira Cloud requires email + API token",
+                    "Set Email (Jira Cloud) in plugin settings or use 'email:token' in API Token"
+                ),
+            ];
 
         var jql = await issueQueryBuilder.BuildTextJql(
             query.Search,
@@ -74,14 +90,24 @@ internal sealed class Searcher(
             cancellationToken,
             timeoutCts.Token
         );
+        var maxResults = Math.Clamp(settings.MaxResults, 1, 100);
 
         var data = await issueSearch
-            .SearchJqlAsync(jql, settings.MaxResults, linkedCts.Token)
+            .SearchJqlAsync(jql, maxResults, linkedCts.Token)
             .ConfigureAwait(false);
+        if (data is null)
+            return
+            [
+                resultCreator.CreateHint(
+                    "Jira API request failed",
+                    "Check Base URL and credentials; Jira Cloud needs email + API token"
+                ),
+                resultCreator.CreateOpenInBrowserAction("Open search in browser ...", jql),
+            ];
 
         var results = new List<Result>();
 
-        foreach (var issue in data.Issues.Take(settings.MaxResults))
+        foreach (var issue in data.Issues.Take(maxResults))
         {
             var statusName = issue.Fields.Status.Name;
             var assignee = issue.Fields.Assignee?.DisplayName ?? "Unassigned";
@@ -119,6 +145,23 @@ internal sealed class Searcher(
             );
 
         return results;
+    }
+
+    private bool RequiresCloudEmailConfiguration()
+    {
+        if (string.IsNullOrWhiteSpace(settings.BaseUrl))
+            return false;
+        if (!Uri.TryCreate(settings.BaseUrl, UriKind.Absolute, out var uri))
+            return false;
+        if (!uri.Host.EndsWith(".atlassian.net", StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        var hasCompositeToken =
+            !string.IsNullOrWhiteSpace(settings.ApiToken)
+            && settings.ApiToken.Contains(':', StringComparison.Ordinal);
+        var hasEmail = !string.IsNullOrWhiteSpace(settings.UserEmail);
+
+        return !hasCompositeToken && !hasEmail;
     }
 
     private static string MapStatusCategoryToBadge(string? key) =>

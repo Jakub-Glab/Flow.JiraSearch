@@ -26,7 +26,7 @@ internal sealed class UserSearchClient(Func<HttpClient> httpFactory) : IUserSear
             return [];
 
         var query = Uri.EscapeDataString(name.Trim());
-        var endpoint = $"/rest/api/2/user/search?query={query}&maxResults={maxResults}";
+        var endpoint = $"/rest/api/3/user/search?query={query}&maxResults={maxResults}";
 
         using var req = new HttpRequestMessage(HttpMethod.Get, endpoint);
         using var http = httpFactory();
