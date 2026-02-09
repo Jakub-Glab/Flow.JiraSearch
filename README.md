@@ -56,6 +56,7 @@ The plugin is configured through Flow Launcher's settings interface:
    | Setting | Description | Example |
    |---------|-------------|---------|
    | **Base URL** | Your Jira instance URL | `https://yourcompany.atlassian.net` |
+   | **Email (Jira Cloud)** | Atlassian account email (required for Jira Cloud API token auth) | `name@company.com` |
    | **API Token** | Personal API token from Jira | `ATATT3xFfGF0...` |
    | **Timeout** | Request timeout in seconds | `10` |
    | **Max Results** | Maximum number of results to display | `10` |
@@ -242,7 +243,9 @@ Notes:
 
 ### Authentication Errors
 - Regenerate your API token in Atlassian Account Settings
-- Ensure you're using your email address as the username (for Atlassian Cloud)
+- For Jira Cloud, use **Email + API Token** authentication
+  - Preferred: set `Email (Jira Cloud)` and `API Token` in plugin settings
+  - Backward-compatible: put `email@example.com:api_token` in the `API Token` field
 - Check that your account has appropriate permissions
 
 ### User Search Not Working
@@ -263,6 +266,16 @@ dotnet build --configuration Release
 ### Running Tests
 ```bash
 dotnet test
+```
+
+Live Jira integration test (optional, disabled by default):
+
+```powershell
+$env:RUN_JIRA_INTEGRATION_TESTS="1"
+$env:JIRA_BASE_URL="https://yourcompany.atlassian.net"
+$env:JIRA_EMAIL="name@company.com"
+$env:JIRA_API_TOKEN="your_api_token"
+dotnet test --filter "FullyQualifiedName~IssueSearchClientIntegrationTests"
 ```
 
 ## Contributing
