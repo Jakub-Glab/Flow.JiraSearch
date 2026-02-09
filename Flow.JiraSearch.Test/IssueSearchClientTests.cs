@@ -123,7 +123,7 @@ public class IssueSearchClientTests : IDisposable
         ShouldBeTestExtensions.ShouldBe(request.Method, HttpMethod.Post);
 
         ShouldBeNullExtensions.ShouldNotBeNull<Uri>(request.RequestUri);
-        ShouldBeStringTestExtensions.ShouldBe(request.RequestUri.ToString(), "https://test.atlassian.net/rest/api/2/search/jql");
+        ShouldBeStringTestExtensions.ShouldBe(request.RequestUri.ToString(), "https://test.atlassian.net/rest/api/3/search/jql");
 
         var requestBody = _httpMessageHandler.LastRequestBody;
         ShouldBeNullExtensions.ShouldNotBeNull<string>(requestBody);
@@ -197,6 +197,59 @@ public class IssueSearchClientTests : IDisposable
         result.Total.ShouldBe(0);
         result.StartAt.ShouldBe(0);
         result.MaxResults.ShouldBe(50);
+    }
+
+    [Fact]
+    public async Task SearchJqlAsync_WithApi3SearchJqlResponseShape_DeserializesIssues()
+    {
+        // Arrange
+        const string jql = "assignee = currentUser() ORDER BY updated DESC";
+        const int maxResults = 10;
+        var cancellationToken = CancellationToken.None;
+
+        var responseJson =
+            """
+            {
+              "issues": [
+                {
+                  "key": "KSEF-4033",
+                  "fields": {
+                    "summary": "Problem z routingiem",
+                    "assignee": {
+                      "displayName": "Jakub Głąb",
+                      "avatarUrls": {
+                        "48x48": "https://example.com/avatar48.png"
+                      }
+                    },
+                    "status": {
+                      "name": "Code review",
+                      "statusCategory": {
+                        "key": "indeterminate"
+                      }
+                    }
+                  }
+                }
+              ],
+              "nextPageToken": "token-value",
+              "isLast": false
+            }
+            """;
+
+        _httpMessageHandler.SetResponse(HttpStatusCode.OK, responseJson);
+
+        // Act
+        var result = await _sut.SearchJqlAsync(jql, maxResults, cancellationToken);
+
+        // Assert
+        result.ShouldNotBeNull();
+        result.Issues.Count.ShouldBe(1);
+        result.Issues[0].Key.ShouldBe("KSEF-4033");
+        result.Issues[0].Fields.Summary.ShouldBe("Problem z routingiem");
+        result.Issues[0].Fields.Assignee.ShouldNotBeNull();
+        result.Issues[0].Fields.Assignee.DisplayName.ShouldBe("Jakub Głąb");
+        result.Issues[0].Fields.Status.Name.ShouldBe("Code review");
+        result.Issues[0].Fields.Status.StatusCategory.ShouldNotBeNull();
+        result.Issues[0].Fields.Status.StatusCategory.Key.ShouldBe("indeterminate");
     }
 
     [Theory]

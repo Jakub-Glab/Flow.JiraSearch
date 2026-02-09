@@ -22,7 +22,7 @@ internal sealed class IssueSearchClient(Func<HttpClient> httpFactory) : IIssueSe
             maxResults,
             fields = new[] { "summary", "status", "priority", "issuetype", "assignee", "project" },
         };
-        using var req = new HttpRequestMessage(HttpMethod.Post, "rest/api/2/search/jql");
+        using var req = new HttpRequestMessage(HttpMethod.Post, "rest/api/3/search/jql");
         req.Content = JsonContent.Create(body);
         using var http = httpFactory();
         using var resp = await http.SendAsync(req, ct).ConfigureAwait(false);

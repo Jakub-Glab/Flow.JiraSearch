@@ -16,6 +16,7 @@
       <RowDefinition Height="auto" />
       <RowDefinition Height="auto" />
       <RowDefinition Height="auto" />
+      <RowDefinition Height="auto" />
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="Auto" />
@@ -44,11 +45,28 @@
       Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
       VerticalAlignment="Center"
       FontSize="14"
+      Text="Email (Jira Cloud)"
+    />
+    <TextBox
+      Grid.Row="1"
+      Grid.Column="1"
+      MaxWidth="600"
+      Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
+      HorizontalAlignment="Left"
+      VerticalAlignment="Center"
+      Text="{Binding Settings.UserEmail}"
+    />
+    <TextBlock
+      Grid.Row="2"
+      Grid.Column="0"
+      Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
+      VerticalAlignment="Center"
+      FontSize="14"
       Text="API Token"
     />
     <PasswordBox
-      x:Name="MaxDecimalPlaces"
-      Grid.Row="1"
+      x:Name="TokenBox"
+      Grid.Row="2"
       Grid.Column="1"
       Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
       HorizontalAlignment="Left"
@@ -57,7 +75,7 @@
       PasswordChanged="TokenBox_PasswordChanged"
     />
     <TextBlock
-      Grid.Row="2"
+      Grid.Row="3"
       Grid.Column="0"
       Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
       VerticalAlignment="Center"
@@ -65,7 +83,7 @@
       Text="Maximum Results"
     />
     <TextBox
-      Grid.Row="2"
+      Grid.Row="3"
       Grid.Column="1"
       MaxWidth="300"
       Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
@@ -75,7 +93,7 @@
       PreviewTextInput="NumberValidationTextBox"
     />
     <TextBlock
-      Grid.Row="3"
+      Grid.Row="4"
       Grid.Column="0"
       Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
       VerticalAlignment="Center"
@@ -83,7 +101,7 @@
       Text="Default Project (separate multiple with comma)"
     />
     <TextBox
-      Grid.Row="3"
+      Grid.Row="4"
       Grid.Column="1"
       MaxWidth="800"
       Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
