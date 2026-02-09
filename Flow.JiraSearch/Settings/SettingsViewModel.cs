@@ -13,6 +13,9 @@ public sealed class SettingsViewModel(PluginSettings settings)
     public string DefaultProjects
     {
         get => string.Join(",", Settings.DefaultProjects);
-        set => Settings.DefaultProjects = value.Split(",").ToList();
+        set =>
+            Settings.DefaultProjects = value
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .ToList();
     }
 }

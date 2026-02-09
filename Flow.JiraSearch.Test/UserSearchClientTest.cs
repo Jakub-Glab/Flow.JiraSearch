@@ -1,4 +1,4 @@
-ï»¿// Tests/JiraClient/UserSearchClientTests.cs
+// Tests/JiraClient/UserSearchClientTests.cs
 
 using System.Net;
 using System.Text.Json;
@@ -270,7 +270,7 @@ public class UserSearchClientTests : IDisposable
         request.RequestUri.ShouldNotBeNull();
         var actualUrl = request.RequestUri.ToString();
 
-        actualUrl.ShouldStartWith("https://test.atlassian.net/rest/api/2/user/search");
+        actualUrl.ShouldStartWith("https://test.atlassian.net/rest/api/3/user/search");
         actualUrl.ShouldContain("maxResults=25");
         actualUrl.ShouldContain("query=");
         actualUrl.ShouldContain("John");
@@ -300,8 +300,8 @@ public class UserSearchClientTests : IDisposable
 
         var actualUrl = request.RequestUri.ToString();
 
-        // Grundstruktur prÃ¼fen
-        actualUrl.ShouldStartWith("https://test.atlassian.net/rest/api/2/user/search");
+        // Grundstruktur prüfen
+        actualUrl.ShouldStartWith("https://test.atlassian.net/rest/api/3/user/search");
         actualUrl.ShouldContain("maxResults=10");
         actualUrl.ShouldContain("query=");
 
@@ -309,7 +309,7 @@ public class UserSearchClientTests : IDisposable
         actualUrl.ShouldContain("John");
         actualUrl.ShouldContain("Jane");
 
-        // Das & sollte in irgendeiner Form escaped sein - prÃ¼fen mit mehreren Versuchen
+        // Das & sollte in irgendeiner Form escaped sein - prüfen mit mehreren Versuchen
         var hasEscapedAmpersand =
             actualUrl.Contains("%26")
             || actualUrl.Contains("&amp;")
@@ -341,7 +341,7 @@ public class UserSearchClientTests : IDisposable
     [InlineData("John", 5)]
     [InlineData("Jane Smith", 10)]
     [InlineData("robert.johnson@company.com", 50)]
-    [InlineData("MarÃ­a GarcÃ­a", 25)]
+    [InlineData("María García", 25)]
     public async Task FindUserIdsByExactNameAsync_WithDifferentParameters_SendsCorrectRequest(
         string searchName,
         int maxResults
@@ -429,7 +429,7 @@ public class UserSearchClientTests : IDisposable
     }
 }
 
-// Tests fÃ¼r die Tokenization-Logik (Ã¼ber Ã¶ffentliche API getestet)
+// Tests für die Tokenization-Logik (über öffentliche API getestet)
 public class UserSearchClientTokenizationTests : IDisposable
 {
     private readonly TestHttpMessageHandler _httpMessageHandler;
@@ -545,7 +545,7 @@ public class UserSearchClientTokenizationTests : IDisposable
         var actualUrl = request.RequestUri.ToString();
 
         // Die URL sollte die Grundstruktur haben
-        actualUrl.ShouldContain("/rest/api/2/user/search");
+        actualUrl.ShouldContain("/rest/api/3/user/search");
         actualUrl.ShouldContain("maxResults=10");
         actualUrl.ShouldContain("query=");
 

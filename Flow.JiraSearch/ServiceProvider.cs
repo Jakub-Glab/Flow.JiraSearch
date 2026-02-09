@@ -1,5 +1,5 @@
 ﻿using System.Net.Http;
-using System.Text;
+using Flow.JiraSearch.Auth;
 using Flow.JiraSearch.JiraClient;
 using Flow.JiraSearch.Search;
 using Flow.JiraSearch.Settings;
@@ -29,9 +29,9 @@ public static class ServiceProvider
                     BaseAddress = new Uri($"{config.BaseUrl}/"),
                     Timeout = TimeSpan.FromSeconds(Math.Clamp(config.Timeout.TotalSeconds, 3, 30)),
                 };
-                var basic = Convert.ToBase64String(Encoding.UTF8.GetBytes(config.ApiToken));
-                httpClient.DefaultRequestHeaders.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", basic);
+                var authHeader = AuthorizationHeaderBuilder.Build(config.UserEmail, config.ApiToken);
+                if (authHeader is not null)
+                    httpClient.DefaultRequestHeaders.Authorization = authHeader;
                 httpClient.DefaultRequestHeaders.Accept.ParseAdd("application/json");
                 return httpClient;
             };
