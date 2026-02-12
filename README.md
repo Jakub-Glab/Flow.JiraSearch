@@ -61,6 +61,7 @@ The plugin is configured through Flow Launcher's settings interface:
    | **Timeout** | Request timeout in seconds | `10` |
    | **Max Results** | Maximum number of results to display | `10` |
    | **Default Projects** | Project keys to search by default | `["PROJECT1", "PROJECT2"]` |
+   | **Named JQL Filters** | One filter per line in format `name=jql`; run it via `&name` | `mine=assignee = currentUser()` |
 
 ### Creating a Jira API Token
 
@@ -196,6 +197,22 @@ jira #sup @me !
 ```
 Find closed issues assigned to me in the SUP project
 
+### Named JQL Filters
+
+Configure saved filters in plugin settings as lines: `name=jql`.
+
+```text
+mine=assignee = currentUser() AND statusCategory != Done
+review=status = "Code review" AND assignee = currentUser()
+```
+
+Then run them directly by name:
+
+```text
+jira &mine
+jira &review
+```
+
 ## Default Projects
 
 If you configure default projects in the settings, searches will automatically be limited to those projects unless you use `#all` or specify a different project with `#projectkey`.
@@ -216,6 +233,7 @@ This is a concise reference for all query operators supported by the plugin. Tok
 | `#projectkey` | Restrict search to a specific project (project key, e.g. `#sup`) | `jira #sup` |
 | `#all` | Search across all projects (overrides `Default Projects`) | `jira #all` |
 | `+labelname` | Require a label. Use multiple `+label` tokens to require multiple labels. Labels use letters and numbers. | `jira +bug +urgent` |
+| `&filtername` | Runs saved JQL by name from settings (`Named JQL Filters`) | `jira &mine` |
 | `*` | Include all statuses (open and closed). If omitted, closed/Done issues are excluded by default. | `jira *` |
 | `!` | Only closed/completed issues (status category Done) | `jira !` |
 | `?` | Only issues in progress (status category "In Progress") | `jira ?` |
@@ -277,6 +295,24 @@ $env:JIRA_EMAIL="name@company.com"
 $env:JIRA_API_TOKEN="your_api_token"
 dotnet test --filter "FullyQualifiedName~IssueSearchClientIntegrationTests"
 ```
+
+## Podsumowanie zmian technicznych
+
+### Autoryzacja Jira Cloud
+
+- Dodano builder nagłówka Basic Auth w [`Flow.JiraSearch/Auth/AuthorizationHeaderBuilder.cs`](Flow.JiraSearch/Auth/AuthorizationHeaderBuilder.cs), który obsługuje:
+  - `email + token` (zalecane dla Jira Cloud),
+  - tryb legacy `email:token` w jednym polu.
+- Podłączono budowanie nagłówka auth w [`Flow.JiraSearch/ServiceProvider.cs`](Flow.JiraSearch/ServiceProvider.cs).
+- Dodano pole `UserEmail` w ustawieniach pluginu: [`Flow.JiraSearch/Settings/PluginSettings.cs`](Flow.JiraSearch/Settings/PluginSettings.cs).
+
+### Migracja endpointów na API v3
+
+- Search endpoint zmieniono w [`Flow.JiraSearch/JiraClient/IssueSearchClient.cs`](Flow.JiraSearch/JiraClient/IssueSearchClient.cs) na `/rest/api/3/search/jql`.
+- User search endpoint zmieniono w [`Flow.JiraSearch/JiraClient/UserSearchClient.cs`](Flow.JiraSearch/JiraClient/UserSearchClient.cs) na `/rest/api/3/user/search`.
+- Zaktualizowano testy URL:
+  - [`Flow.JiraSearch.Test/IssueSearchClientTests.cs`](Flow.JiraSearch.Test/IssueSearchClientTests.cs)
+  - [`Flow.JiraSearch.Test/UserSearchClientTest.cs`](Flow.JiraSearch.Test/UserSearchClientTest.cs)
 
 ## Contributing
 

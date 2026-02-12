@@ -10,6 +10,7 @@ public record PluginSettings
         ApiToken = string.Empty;
         MaxResults = 10;
         DefaultProjects = new List<string>();
+        NamedJqlFilters = new List<NamedJqlFilter>();
     }
 
     public string BaseUrl { get; set; }
@@ -17,5 +18,6 @@ public record PluginSettings
     public TimeSpan Timeout { get; set; }
     public string ApiToken { get; set; }
     public List<string> DefaultProjects { get; set; }
+    public List<NamedJqlFilter> NamedJqlFilters { get; set; }
     public int MaxResults { get; set; }
 }

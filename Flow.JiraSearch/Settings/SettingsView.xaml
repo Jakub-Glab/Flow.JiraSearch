@@ -17,6 +17,7 @@
       <RowDefinition Height="auto" />
       <RowDefinition Height="auto" />
       <RowDefinition Height="auto" />
+      <RowDefinition Height="auto" />
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="Auto" />
@@ -108,6 +109,28 @@
       HorizontalAlignment="Left"
       VerticalAlignment="Center"
       Text="{Binding DefaultProjects}"
+    />
+    <TextBlock
+      Grid.Row="5"
+      Grid.Column="0"
+      Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
+      VerticalAlignment="Top"
+      FontSize="14"
+      Text="Named JQL Filters (one per line: name=jql)"
+    />
+    <TextBox
+      Grid.Row="5"
+      Grid.Column="1"
+      MaxWidth="900"
+      MinWidth="600"
+      Height="120"
+      Margin="{StaticResource SettingPanelItemRightTopBottomMargin}"
+      HorizontalAlignment="Left"
+      VerticalAlignment="Center"
+      AcceptsReturn="True"
+      TextWrapping="Wrap"
+      VerticalScrollBarVisibility="Auto"
+      Text="{Binding NamedJqlFilters}"
     />
   </Grid>
 </UserControl>

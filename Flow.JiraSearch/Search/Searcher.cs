@@ -40,6 +40,24 @@ internal sealed class Searcher(
                 ),
             ];
 
+        if (
+            NamedJqlFilterResolver.TryResolveJql(query.Search, settings.NamedJqlFilters, out var namedJql)
+        )
+        {
+            context.API.LogDebug(nameof(Searcher), $"Named JQL: {namedJql}");
+            return await SearchAsync(namedJql, token);
+        }
+
+        var requestedFilterName = NamedJqlFilterResolver.ExtractRequestedFilterName(query.Search);
+        if (requestedFilterName is not null)
+            return
+            [
+                resultCreator.CreateHint(
+                    $"Unknown named filter '&{requestedFilterName}'",
+                    CreateNamedFilterHint()
+                ),
+            ];
+
         var jql = await issueQueryBuilder.BuildTextJql(
             query.Search,
             settings.DefaultProjects,
@@ -68,6 +86,7 @@ internal sealed class Searcher(
             resultCreator.CreateHint("?", "In progress issues"),
             resultCreator.CreateHint("#ABC", "Project ABC"),
             resultCreator.CreateHint("+Label1", "Issues with label 'Label1'"),
+            resultCreator.CreateHint("&myqueryname", "Run saved JQL filter by name"),
         ];
     }
 
@@ -162,6 +181,18 @@ internal sealed class Searcher(
         var hasEmail = !string.IsNullOrWhiteSpace(settings.UserEmail);
 
         return !hasCompositeToken && !hasEmail;
+    }
+
+    private string CreateNamedFilterHint()
+    {
+        var availableFilters = settings.NamedJqlFilters
+            .Where(filter => !string.IsNullOrWhiteSpace(filter.Name))
+            .Select(filter => $"&{filter.Name}")
+            .ToList();
+
+        return availableFilters.Count > 0
+            ? $"Available: {string.Join(", ", availableFilters)}"
+            : "No named filters configured in settings";
     }
 
     private static string MapStatusCategoryToBadge(string? key) =>
