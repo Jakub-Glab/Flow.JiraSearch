@@ -86,6 +86,7 @@ internal sealed class Searcher(
             resultCreator.CreateHint("?", "In progress issues"),
             resultCreator.CreateHint("#ABC", "Project ABC"),
             resultCreator.CreateHint("+Label1", "Issues with label 'Label1'"),
+            resultCreator.CreateHint("/PROJECT-123", "Issue key lookup (live typing, status ignored)"),
             resultCreator.CreateHint("&myqueryname", "Run saved JQL filter by name"),
         ];
     }

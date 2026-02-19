@@ -168,6 +168,11 @@ jira ABC-123
 ```
 Find specific issue by key
 
+```
+jira /ABC-123
+```
+Find specific issue by key in slash mode (supports live partial typing like `/ABC`, `/ABC-1`)
+
 ### Text Search
 
 ```
@@ -238,6 +243,7 @@ This is a concise reference for all query operators supported by the plugin. Tok
 | `!` | Only closed/completed issues (status category Done) | `jira !` |
 | `?` | Only issues in progress (status category "In Progress") | `jira ?` |
 | `PROJECT-123` | Exact issue key lookup (pattern: uppercase project key, dash, number) | `jira WEB-456` |
+| `/PROJECT-123` | Issue key mode with live typing; `/PROJ`, `/PROJ-1` match progressively and `-` is ignored for partial search | `jira /WEB-456` |
 | free text | Any other words are used as a text search (summary OR text) | `jira authentication login`
 
 Notes:
@@ -245,6 +251,8 @@ Notes:
 - The `?` operator (In Progress) is supported by the query builder and filters by `statusCategory = "In Progress"`.
 - Username resolution may return multiple account IDs; the plugin will include the matched IDs (bounded) in the JQL `IN` clause.
 - The `#all` token overrides `Default Projects`. To search across default projects, omit `#projectkey` and `#all`.
+- Slash issue-key mode can be used for incremental typing (for example `/PROJ`, `/PROJ-4`, `/PROJ-4024`).
+- Slash issue-key mode ignores status filters (returns Done and non-Done issues).
 - Issue key matching follows the pattern used in the builder; use the exact key to directly find a single issue.
 
 ## Troubleshooting
