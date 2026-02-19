@@ -85,7 +85,7 @@ Get-ChildItem "$BinPath\*.dll" | Where-Object {
 }
 
 # Create ZIP file
-$ZipFileName = "$PluginName-v1.1.0.zip"
+$ZipFileName = "$PluginName-v1.3.2-beta.zip"
 $ZipPath = Join-Path $OutputPath $ZipFileName
 
 Write-Host "Creating ZIP package: $ZipFileName" -ForegroundColor Yellow
